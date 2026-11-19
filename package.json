@@ -1,0 +1,6 @@
+{
+  "name": "medical-clinic-management",
+  "version": "1.0.0",
+  "description": "Medical Clinic Management System",
+  "main": "src/app.js"
+}
