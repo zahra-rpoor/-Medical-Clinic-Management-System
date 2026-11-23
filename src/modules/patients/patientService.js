@@ -51,7 +51,7 @@ const newItem = {
         gender: "female",
         phone: "0788900300",
         email: "yalde.a@gmail.com",
-        status: "passive"
+        status: "active"
     }
 
 function addPatient(newPatient) {
@@ -62,11 +62,15 @@ console.log(addPatient(newItem))
 console.log(patientData)
 
 function deactivatePatient(patientId) {
-    findPatient = patientData.find(patient => patient.id === patientId)
-    if (findPatient == false) {
+    const findPatient = patientData.find(patient => patient.id === patientId)
+    if (!findPatient) {
         console.log("Patient not found!")
-    } else {
-        patientData.replace("deactivate")
-    }
+        return null;
+    } 
+    findPatient.status = "passive";
+    return findPatient;
     
 }
+
+console.log(deactivatePatient("Pat-0004"));
+console.log(deactivatePatient("Pat-9999"));
