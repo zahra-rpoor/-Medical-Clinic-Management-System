@@ -1,7 +1,17 @@
-//temporary apointment data for development and testing(without JSON)
-const appointments = [
-    
-]
+// importing functions from filemanager
+const path = require("path")
+const {readJSON, writeJSON} = require("../../utils/filemanager")
+// appointment information recieving path
+const appointmentsFilePath = path.join(__dirname, "../../data/appointments.json")
+
+
+
+
+// Load appointments from the JSON file
+const appointments = readJSON(appointmentsFilePath)
+
+
+
 // mock data should be cleaned once JSON data is here
 const patients = [
     {
@@ -153,7 +163,12 @@ function bookAppointment(patientId, doctorId, date, time){
         console.log("Patient is inactive. Appointment cannot be found")
         return
     }
-    
+    // Check date validation
+if (!isValidDate(date)) {
+    console.log("Invalid date.");
+    return;
+}
+
     // is the doctor active and availibel
     const doctor = getDoctorById(doctorId)
     
@@ -238,6 +253,9 @@ function bookAppointment(patientId, doctorId, date, time){
             
             appointments.push(newAppointment)
 
+            // save appointments to the JSON file
+            writeJSON(appointmentsFilePath, appointments);
+
             
             console.log("Apontment Booked Succesfully!")
             
@@ -271,8 +289,9 @@ function bookAppointment(patientId, doctorId, date, time){
                 return
                 
             }
-            
             appointment.status = "cancelled"
+            // save update to JSON
+            writeJSON(appointmentsFilePath, appointments);
             
             console.log("Apointment cancelled successfully!")
         }
@@ -302,8 +321,10 @@ function bookAppointment(patientId, doctorId, date, time){
             console.log("This appointment is already completed.");
            return;
           }
-        appointment.status = "completed";
-        console.log("Appointment completed successfully!");
+          // update appointments to JSON
+          appointment.status = "completed";
+          writeJSON(appointmentsFilePath, appointments);
+          console.log("Appointment completed successfully!");
 
        } 
         
@@ -322,7 +343,7 @@ function bookAppointment(patientId, doctorId, date, time){
            return appointments;
             
         }
-        console.log(getAllAppointments())
+        
         
         
         // function to get patients appointments by ID
@@ -353,7 +374,7 @@ function bookAppointment(patientId, doctorId, date, time){
         
         
 // ==========================
-// get appointments by date
+// get appointments by date and status
 // =========================
         
         // Function to get appointments by date
@@ -374,19 +395,24 @@ function bookAppointment(patientId, doctorId, date, time){
           
 
 
+        //  validate appointmnet by status
          function isValidStatus(status) {
-    const validStatuses = ["booked", "cancelled", "completed"];
+             const validStatuses = ["booked", "cancelled", "completed"];
 
-    return validStatuses.includes(status);
-}
+             return validStatuses.includes(status);
+         }
 
-        //  get appointmnet by status
+
+
+
+        // get appointments by status
 
         function getAppointmentsByStatus(status){
             if (!isValidStatus(status)){
                 console.log("Invalid appointmnet status.")
                 return []
             }
+
             const filteredAppointments = appointments.filter(appointment =>{
                 return appointment.status === status
             })
@@ -441,6 +467,12 @@ function bookAppointment(patientId, doctorId, date, time){
             console.log("Invalid time format. Use HH:MM")
             return
            }
+           // Validate the new date
+if (!isValidDate(newDate)) {
+    console.log("Invalid date.");
+    return;
+}
+
 
         // Check whether the doctor works on the new date
        const isWorkingDay = isDoctorWorkingOnDate(appointment.doctorId, newDate);
@@ -501,13 +533,14 @@ function bookAppointment(patientId, doctorId, date, time){
         appointment.date = newDate
         appointment.time = newTime
         
+        // Save updated appointments to JSON
+       writeJSON(appointmentsFilePath, appointments);
+
         console.log("Appointment rescheduale successfully!");
         console.log("New date: ", appointment.date)
         console.log("New Time: ", appointment.time)
         
     }
-
-
 
 
 
