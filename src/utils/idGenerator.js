@@ -7,4 +7,3 @@ function generateId (prefix, records) {
     const nextId = maxNumber + 1; 
     return `${prefix}-${String (nextId).padStart(4, "0")}`;
 }
-module.exports = { generateId };
