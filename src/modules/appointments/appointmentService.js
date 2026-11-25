@@ -1,10 +1,15 @@
-// importing functions from filemanager
-const path = require("path")
-const {readJSON, writeJSON} = require("../../utils/filemanager")
-// appointment information recieving path
-const appointmentsFilePath = path.join(__dirname, "../../data/appointments.json")
+// importing functions from filemanager(ES Module)
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { readJSON, writeJSON } from "../../utils/filemanager.js";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
+const appointmentsFilePath = path.join(
+    __dirname,
+    "../../data/appointments.json"
+);
 
 
 // Load appointments from the JSON file
@@ -545,7 +550,17 @@ if (!isValidDate(newDate)) {
 
 
 
-
+export {
+    bookAppointment,
+    cancelAppointment,
+    completeAppointment,
+    rescheduleAppointment,
+    getAllAppointments,
+    getAppointmentsByPatient,
+    getAppointmentsByDoctor,
+    getAppointmentsByDate,
+    getAppointmentsByStatus
+};
 
 
 

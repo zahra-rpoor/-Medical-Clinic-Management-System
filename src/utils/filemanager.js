@@ -1,5 +1,5 @@
 //handles reading and writing JSON data files
-const fs = require("fs")
+import fs from "node:fs";
 
 // ====================================
 // ("path") is a module, through it we can join several files later
@@ -18,8 +18,19 @@ function readJSON(filePath){
 
     return parsedData
     }catch(error){
+        if (error.code === "ENOENT") {
+            throw new Error(`File not found: ${filePath}`);
+        }
+
+        if (error instanceof SyntaxError) {
+            throw new Error(`Invalid JSON format in file: ${filePath}`);
+        }
+
+        if (error.code === "EACCES") {
+            throw new Error(`Permission denied: Cannot read ${filePath}`);
+        }
        
-        throw error
+        throw new Error(`Failed to read JSON file: ${error.message}`);
 
     }
 
@@ -43,4 +54,4 @@ function writeJSON(filePath, data){
 
 
 // export thesee functions so other moxdules can use them 
-module.exports = {readJSON, writeJSON}
+export { readJSON, writeJSON };
