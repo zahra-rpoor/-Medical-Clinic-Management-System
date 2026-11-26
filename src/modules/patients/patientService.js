@@ -8,7 +8,7 @@ const rl = readline.createInterface({
 
 const patientData = [
     {
-        id: "Pat-0001",
+        id: "PAT-0001",
         fullName: "Sara Mustamendi",
         age: 22,
         gender: "Female",
@@ -17,7 +17,7 @@ const patientData = [
         status: "active"
     },
     {
-        id: "Pat-0002",
+        id: "PAT-0002",
         fullName: "Zahra Razaee",
         age: 42,
         gender: "Female",
@@ -26,7 +26,7 @@ const patientData = [
         status: "active"
     },
     {
-        id: "Pat-0003",
+        id: "PAT-0003",
         fullName: "Qasim Naeme",
         age: 32,
         gender: "male",
@@ -35,7 +35,7 @@ const patientData = [
         status: "active"
     },
     {
-        id: "Pat-0004",
+        id: "PAT-0004",
         fullName: "Qasim Naeme",
         age: 32,
         gender: "male",
@@ -44,7 +44,7 @@ const patientData = [
         status: "active"
     },
     {
-        id: "Pat-0005",
+        id: "PAT-0005",
         fullName: "Qasim Naeme",
         age: 32,
         gender: "male",
@@ -53,7 +53,7 @@ const patientData = [
         status: "active"
     },
     {
-        id: "Pat-0006",
+        id: "PAT-0006",
         fullName: "Qasim Naeme",
         age: 32,
         gender: "male",
@@ -62,7 +62,7 @@ const patientData = [
         status: "active"
     },
     {
-        id: "Pat-0007",
+        id: "PAT-0007",
         fullName: "Qasim Naeme",
         age: 32,
         gender: "male",
@@ -71,7 +71,7 @@ const patientData = [
         status: "active"
     },
     {
-        id: "Pat-0008",
+        id: "PAT-0008",
         fullName: "Qasim Naeme",
         age: 32,
         gender: "male",
@@ -80,7 +80,7 @@ const patientData = [
         status: "active"
     },
     {
-        id: "Pat-0009",
+        id: "PAT-0009",
         fullName: "Qasim Naeme",
         age: 32,
         gender: "male",
@@ -89,7 +89,7 @@ const patientData = [
         status: "active"
     },
     {
-        id: "Pat-0010",
+        id: "PAT-0010",
         fullName: "Qasim Naeme",
         age: 32,
         gender: "male",
@@ -103,14 +103,14 @@ console.log(patientData[0].fullName);
 console.log(patientData.length);
 
 
-
-async function getPatientById() {
-    let patientId = await rl.question("Enter your id: ");
+let patientId = "PAT-0001"
+function getPatientById() {
     return patientData.find(patient => patient.id === patientId);
 }
 
-getPatientById().then(patient => { console.log(patient);
-})
+console.log(getPatientById(patientId))
+
+
 
 function getActivePatients() {
     return patientData.filter(patient => patient.status === "active");
@@ -118,7 +118,7 @@ function getActivePatients() {
 console.log(getActivePatients());
 
 const newItem = {
-    id: "Pat-0050",
+    id: "PAT-0050",
     fullName: "Yalda Ameri",
     age: 45,
     gender: "female",
@@ -139,12 +139,12 @@ function deactivatePatient(patientId) {
         console.log("Patient not found!");
         return null;
     }
-    findPatient.status = "passive";
+    findPatient.status = "inactive";
     return findPatient;
 }
 
-console.log(deactivatePatient("Pat-0004"));
-console.log(deactivatePatient("Pat-9999"));
+console.log(deactivatePatient("PAT-0004"));
+console.log(deactivatePatient("PAT-9999"));
 
 let newPhone = { phone: "0789900900" };
 
@@ -158,7 +158,7 @@ function updatePatient(patientId, updateData) {
     return findPatient;
 }
 
-console.log(updatePatient("Pat-0001", newPhone));
+console.log(updatePatient("PAT-0001", newPhone));
 
 function getAllPatients() {
     return patientData;
@@ -222,9 +222,9 @@ function searchPatientByPhone(phone) {
 console.log(searchPatientByName("zahra"));
 console.log(searchPatientByPhone("078"));
 
-function generatePatientId() {
+function generateId() {
     const nextId = patientData.length + 1;
-    return `Pat-${String(nextId).padStart(4, "0")}`;
+    return `PAT-${String(nextId).padStart(4, "0")}`;
 }
 
 function validatePatient(patient) {
@@ -259,7 +259,7 @@ function registerPatient(patient) {
     }
 
     const newPatient = {
-        id: generatePatientId(),
+        id: generateId(),
         fullName: patient.fullName.trim(),
         age: Number(patient.age),
         gender: patient.gender.trim(),
@@ -310,7 +310,7 @@ function getPatientProfile(patientId, appointments, bills) {
 
     const upcomingAppointments = 
     appointments.filter(appointment => appointment.patientId === patientId &&
-        appointment.date >= today && appointment.status === "booked"
+        appointment.date >= today && appointment.status === "scheduled"
     );
 
     const patientsBills = bills.filter(
@@ -339,4 +339,24 @@ function getPatientProfile(patientId, appointments, bills) {
             remainingBalance
         }
     };
+}
+
+export {
+    getPatientById,
+    getActivePatients,
+    addPatient,
+    deactivatePatient,
+    updatePatient,
+    getAllPatients,
+    getPatientPaginated,
+    showCurrentPage,
+    nextPage,
+    previousPage,
+    searchPatientByName,
+    searchPatientByPhone,
+    generateId,
+    validatePatient,
+    registerPatient,
+    promptNewPatient,
+    promptNewPatient
 }
