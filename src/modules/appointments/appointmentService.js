@@ -6,6 +6,13 @@ import { readJSON, writeJSON } from "../../utils/filemanager.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// import from doctor and service management
+import {
+    isDoctorAvailable,
+    getServiceById
+} from "../doctors/doctorService.js";
+// import from id generator 
+import { generateId } from "../../utils/idGenerator.js";
 const appointmentsFilePath = path.join(
     __dirname,
     "../../data/appointments.json"
@@ -32,58 +39,11 @@ const patients = [
 ];
 
 
-// mock data for doctors. real ones come from module 2
-    const doctors = [
-        {
-            id: 201,
-            name: "Dr. Ahmad",
-            status: "active",
-            workingDays: [
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Saturday",
-                "Sunday"
-            ],
-            workingHours: {
-                start: "08:00",
-                end: "16:00"
-        }
-    },
-    {
-        id: 202,
-        name: "Dr. Sara",
-        status: "active",
-        workingDays: [
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday"
-        ],
-        workingHours: {
-            start: "09:00",
-            end: "15:00"
-        }
-    }
-]
 
 
      // this fumction checks whether doctor is working on the selcted day
     
-    function isDoctorWorkingOnDate(doctorId, date){
-        const doctor = getDoctorById(doctorId)
-        
-        if (!doctor) {
-            return false
-        }
-    
-    const dayName = getDayName(date)
-    
-    return doctor.workingDays.includes(dayName)
-}
-
+//   removed 
 
 // ==============================
 
@@ -100,45 +60,16 @@ function getPatientById(patientId) {
 }
 
 // cheking for doctor's availibality and activness through id
-function getDoctorById(doctorId){
-    const doctor = doctors.find(doctor => {
-        return doctor.id === doctorId
-    })
-    return doctor
-    
-}
+
+// removed 
+
+
    // checking doctors' availibility on weekdays
-        function getDayName(date) {
-    const appointmentDate = new Date(date);
-
-    const dayNumber = appointmentDate.getUTCDay();
-
-    const days = [
-        "Sunday",
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday"
-    ];
-
-    return days[dayNumber];}
+        // function getDayName(date) was removed
 
 
- function isDoctorAvailableAtTime(doctorId, time){
-        const doctor = getDoctorById(doctorId);
-
-        if (!doctor){
-            return false;
-        }
-        const startTime = doctor.workingHours.start;
-        const endTime = doctor.workingHours.end;
-
-
-        return time >= startTime && time < endTime
-    }
-    
+//  function isDoctorAvailableAtTime(doctorId, time) was removed
+      
 
 
 
@@ -151,7 +82,7 @@ function getDoctorById(doctorId){
 
 //function to book a new apointment (chekz the patient and doxtor first. 
 // avoids double booking)
-function bookAppointment(patientId, doctorId, date, time){
+function bookAppointment(patientId, doctorId, serviceId, date, time){
     
     
     
@@ -175,35 +106,20 @@ if (!isValidDate(date)) {
 }
 
     // is the doctor active and availibel
-    const doctor = getDoctorById(doctorId)
-    
-    if (!doctor){
-        console.log("Doctor not found.")
-        return
-    }
-    if(doctor.status !== "active"){
-        console.log("Doctor is inactive")
-        return
-    }
-    // is doctor working on the selected day
-    const isWorkingDay = isDoctorWorkingOnDate(doctorId, date);
-
-    if (!isWorkingDay) {
-    console.log("Doctor does not work on this day.");
+    // const doctor = getDoctorById(doctorId) was removed
+    // Validate time format
+if (!isValidTime(time)) {
+    console.log("Invalid time format. Use HH:MM.");
     return;
-    }
+}
 
-   
+// Check doctor's availability
+const isAvailable = isDoctorAvailable(doctorId, date, time);
 
-
-    // availability
-    const isAvailable = isDoctorAvailableAtTime(doctorId, time)
-
-    if (!isAvailable){
-        console.log("Doctor is not available at the this time.")
-        return
-    }
-   
+if (!isAvailable) {
+    console.log("Doctor is not available at this date or time.");
+    return;
+}
 
      
 
@@ -212,7 +128,7 @@ if (!isValidDate(date)) {
         return appointment.doctorId === doctorId &&
         appointment.date === date &&
         appointment.time === time &&
-               appointment.status === "booked";
+               appointment.status === "scheduled";
             })
             
             
@@ -227,7 +143,7 @@ if (!isValidDate(date)) {
                 return appointment.patientId === patientId &&
                 appointment.date === date &&
                 appointment.time === time &&
-                appointment.status === "booked" ;
+                appointment.status === "scheduled" ;
             })
             
             if (existingPatientAppointment){
@@ -237,7 +153,13 @@ if (!isValidDate(date)) {
             
             
 
+        // service 
+        const service = getServiceById(serviceId);
 
+        if (!service || service.status !== "active") {
+        console.log("Service not found or inactive.");
+          return;
+}
 
 
 
@@ -245,12 +167,13 @@ if (!isValidDate(date)) {
             
             //  Create a new appointment in a object
             const newAppointment = {
-                id : appointments.length + 1, 
+                id : generateId("APT", appointments), 
                 patientId :patientId,
                 doctorId: doctorId,
+                serviceId: serviceId,
                 date : date, 
                 time: time, 
-                status: "booked"
+                status: "scheduled"
             }
             
             
@@ -402,7 +325,7 @@ if (!isValidDate(date)) {
 
         //  validate appointmnet by status
          function isValidStatus(status) {
-             const validStatuses = ["booked", "cancelled", "completed"];
+             const validStatuses = ["scheduled", "cancelled", "completed"];
 
              return validStatuses.includes(status);
          }
@@ -480,22 +403,18 @@ if (!isValidDate(newDate)) {
 
 
         // Check whether the doctor works on the new date
-       const isWorkingDay = isDoctorWorkingOnDate(appointment.doctorId, newDate);
+        // was removed
+        // Check doctor's availability on the new date and time
+const isAvailable = isDoctorAvailable(
+    appointment.doctorId,
+    newDate,
+    newTime
+);
 
-       if (!isWorkingDay) {
-       console.log("Doctor does not work on this day.");
-       return;
-         }
-            
-         
-        // check wether th edoctor is available at the new time
-        const isAvailable = isDoctorAvailableAtTime(appointment.doctorId, newTime)
-
-        if(!isAvailable){
-            console.log("Doctor is not availabel at this time.")
-            return
-        }
-
+if (!isAvailable) {
+    console.log("Doctor is not available at the new date or time.");
+    return;
+}
 
             
             
@@ -504,7 +423,7 @@ if (!isValidDate(newDate)) {
             return existing.doctorId === appointment.doctorId &&
             existing.date === newDate &&
             existing.time === newTime &&
-            existing.status === "booked" &&
+            existing.status === "scheduled" &&
             existing.id !== appointmentId
         })
         
@@ -522,7 +441,7 @@ if (!isValidDate(newDate)) {
             return existing.patientId === appointment.patientId &&
             existing.date === newDate &&
             existing.time === newTime &&
-            existing.status === "booked" &&
+            existing.status === "scheduled" &&
             existing.id !== appointmentId
             
         })

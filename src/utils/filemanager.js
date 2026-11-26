@@ -10,20 +10,28 @@ import fs from "node:fs";
 
 
 // this function reads files, convert JSON text to JSON data and returns it
-function readJSON(filePath){
+function readJSON(filePath,  defaultValue = []){
     // try and catch is for error inticipation
     try{
-    const data = fs.readFileSync(filePath, "utf8")
-    const parsedData = JSON.parse(data)
+     const data = fs.readFileSync(filePath, "utf8")
+
+     const parsedData = JSON.parse(data)
 
     return parsedData
+
+
     }catch(error){
         if (error.code === "ENOENT") {
-            throw new Error(`File not found: ${filePath}`);
+             console.log(`File not found: ${filePath}`);
+            console.error("Using default data instead.");
+    return defaultValue;
+            
         }
 
         if (error instanceof SyntaxError) {
-            throw new Error(`Invalid JSON format in file: ${filePath}`);
+             console.error(`Invalid JSON format in file: ${filePath}`);
+             console.error("Using default data instead.");
+             return defaultValue;
         }
 
         if (error.code === "EACCES") {
@@ -39,16 +47,9 @@ function readJSON(filePath){
 
 
 // this function writes Javacript data into a JSON file
-function writeJSON(filePath, data){
-
-    // using try and catch for error handling
-    try{
-       const jsonData = JSON.stringify(data, null, 2)
-       fs.writeFileSync(filePath, jsonData, "utf8")
-    }catch(error){
-        throw error
-    }
-
+function writeJSON(filePath, data) {
+    const jsonData = JSON.stringify(data, null, 2);
+    fs.writeFileSync(filePath, jsonData, "utf8");
 }
 
 

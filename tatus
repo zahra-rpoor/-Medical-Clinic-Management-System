@@ -1,0 +1,401 @@
+[1mdiff --git a/src/data/appointments.json b/src/data/appointments.json[m
+[1mnew file mode 100644[m
+[1mindex 0000000..18ac845[m
+[1m--- /dev/null[m
+[1m+++ b/src/data/appointments.json[m
+[36m@@ -0,0 +1,10 @@[m
+[32m+[m[32m[[m
+[32m+[m[32m  {[m
+[32m+[m[32m    "id": 1,[m
+[32m+[m[32m    "patientId": 101,[m
+[32m+[m[32m    "doctorId": 201,[m
+[32m+[m[32m    "date": "2026-11-23",[m
+[32m+[m[32m    "time": "10:00",[m
+[32m+[m[32m    "status": "booked"[m
+[32m+[m[32m  }[m
+[32m+[m[32m][m
+\ No newline at end of file[m
+[1mdiff --git a/src/modules/appointments/appointmentService.js b/src/modules/appointments/appointmentService.js[m
+[1mindex ef8e4be..2664f1c 100644[m
+[1m--- a/src/modules/appointments/appointmentService.js[m
+[1m+++ b/src/modules/appointments/appointmentService.js[m
+[36m@@ -1,7 +1,17 @@[m
+[31m-//temporary apointment data for development and testing(without JSON)[m
+[31m-const appointments = [[m
+[31m-    [m
+[31m-][m
+[32m+[m[32m// importing functions from filemanager[m
+[32m+[m[32mconst path = require("path")[m
+[32m+[m[32mconst {readJSON, writeJSON} = require("../../utils/filemanager")[m
+[32m+[m[32m// appointment information recieving path[m
+[32m+[m[32mconst appointmentsFilePath = path.join(__dirname, "../../data/appointments.json")[m
+[32m+[m
+[32m+[m
+[32m+[m
+[32m+[m
+[32m+[m[32m// Load appointments from the JSON file[m
+[32m+[m[32mconst appointments = readJSON(appointmentsFilePath)[m
+[32m+[m
+[32m+[m
+[32m+[m
+ // mock data should be cleaned once JSON data is here[m
+ const patients = [[m
+     {[m
+[36m@@ -238,6 +248,9 @@[m [mfunction bookAppointment(patientId, doctorId, date, time){[m
+             [m
+             appointments.push(newAppointment)[m
+ [m
+[32m+[m[32m            // save appointments to the JSON file[m
+[32m+[m[32m            writeJSON(appointmentsFilePath, appointments);[m
+[32m+[m
+             [m
+             console.log("Apontment Booked Succesfully!")[m
+             [m
+[36m@@ -271,8 +284,9 @@[m [mfunction bookAppointment(patientId, doctorId, date, time){[m
+                 return[m
+                 [m
+             }[m
+[31m-            [m
+             appointment.status = "cancelled"[m
+[32m+[m[32m            // save update to JSON[m
+[32m+[m[32m            writeJSON(appointmentsFilePath, appointments);[m
+             [m
+             console.log("Apointment cancelled successfully!")[m
+         }[m
+[36m@@ -302,8 +316,10 @@[m [mfunction bookAppointment(patientId, doctorId, date, time){[m
+             console.log("This appointment is already completed.");[m
+            return;[m
+           }[m
+[32m+[m[32m          console.log("Appointment completed successfully!");[m
+[32m+[m[32m          // update appointments to JSON[m
+[32m+[m[32m          writeJSON(appointmentsFilePath, appointments);[m
+         appointment.status = "completed";[m
+[31m-        console.log("Appointment completed successfully!");[m
+ [m
+        } [m
+         [m
+[36m@@ -353,7 +369,7 @@[m [mfunction bookAppointment(patientId, doctorId, date, time){[m
+         [m
+         [m
+ // ==========================[m
+[31m-// get appointments by date[m
+[32m+[m[32m// get appointments by date and status[m
+ // =========================[m
+         [m
+         // Function to get appointments by date[m
+[36m@@ -374,19 +390,24 @@[m [mfunction bookAppointment(patientId, doctorId, date, time){[m
+           [m
+ [m
+ [m
+[32m+[m[32m        //  validate appointmnet by status[m
+          function isValidStatus(status) {[m
+[31m-    const validStatuses = ["booked", "cancelled", "completed"];[m
+[32m+[m[32m             const validStatuses = ["booked", "cancelled", "completed"];[m
+[32m+[m
+[32m+[m[32m             return validStatuses.includes(status);[m
+[32m+[m[32m         }[m
+[32m+[m
+ [m
+[31m-    return validStatuses.includes(status);[m
+[31m-}[m
+ [m
+[31m-        //  get appointmnet by status[m
+[32m+[m
+[32m+[m[32m        // get appointments by status[m
+ [m
+         function getAppointmentsByStatus(status){[m
+             if (!isValidStatus(status)){[m
+                 console.log("Invalid appointmnet status.")[m
+                 return [][m
+             }[m
+[32m+[m
+             const filteredAppointments = appointments.filter(appointment =>{[m
+                 return appointment.status === status[m
+             })[m
+[36m@@ -501,6 +522,9 @@[m [mfunction bookAppointment(patientId, doctorId, date, time){[m
+         appointment.date = newDate[m
+         appointment.time = newTime[m
+         [m
+[32m+[m[32m        // Save updated appointments to JSON[m
+[32m+[m[32m       writeJSON(appointmentsFilePath, appointments);[m
+[32m+[m
+         console.log("Appointment rescheduale successfully!");[m
+         console.log("New date: ", appointment.date)[m
+         console.log("New Time: ", appointment.time)[m
+[36m@@ -514,7 +538,8 @@[m [mfunction bookAppointment(patientId, doctorId, date, time){[m
+ [m
+ [m
+ [m
+[31m-[m
+[32m+[m[32mbookAppointment(101, 201, "2026-11-23", "10:00");[m
+[32m+[m[32mconsole.log(getAllAppointments());[m
+ [m
+ [m
+ [m
+[1mdiff --git a/src/utils/filemanager.js b/src/utils/filemanager.js[m
+[1mindex b8ca836..7d044b1 100644[m
+[1m--- a/src/utils/filemanager.js[m
+[1m+++ b/src/utils/filemanager.js[m
+[36m@@ -1 +1,46 @@[m
+ //handles reading and writing JSON data files[m
+[32m+[m[32mconst fs = require("fs")[m
+[32m+[m
+[32m+[m[32m// ====================================[m
+[32m+[m[32m// ("path") is a module, through it we can join several files later[m
+[32m+[m[32m// const path = require("path")[m
+[32m+[m[32m// const dataPath = path.join(__dirname, "..", "data", "appointments.json");[m
+[32m+[m[32m// ======================================[m
+[32m+[m
+[32m+[m
+[32m+[m
+[32m+[m[32m// this function reads files, convert JSON text to JSON data and returns it[m
+[32m+[m[32mfunction readJSON(filePath){[m
+[32m+[m[32m    // try and catch is for error inticipation[m
+[32m+[m[32m    try{[m
+[32m+[m[32m    const data = fs.readFileSync(filePath, "utf8")[m
+[32m+[m[32m    const parsedData = JSON.parse(data)[m
+[32m+[m
+[32m+[m[32m    return parsedData[m
+[32m+[m[32m    }catch(error){[m
+[32m+[m[41m       [m
+[32m+[m[32m        throw error[m
+[32m+[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m
+[32m+[m
+[32m+[m[32m// this function writes Javacript data into a JSON file[m
+[32m+[m[32mfunction writeJSON(filePath, data){[m
+[32m+[m
+[32m+[m[32m    // using try and catch for error handling[m
+[32m+[m[32m    try{[m
+[32m+[m[32m       const jsonData = JSON.stringify(data, null, 2)[m
+[32m+[m[32m       fs.writeFileSync(filePath, jsonData, "utf8")[m
+[32m+[m[32m    }catch(error){[m
+[32m+[m[32m        throw error[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m
+[32m+[m
+[32m+[m[32m// export thesee functions so other moxdules can use them[m[41m [m
+[32m+[m[32mmodule.exports = {readJSON, writeJSON}[m
+\ No newline at end of file[m
+[1mdiff --git a/src/data/appointments.json b/src/data/appointments.json[m
+[1mnew file mode 100644[m
+[1mindex 0000000..c9c513b[m
+[1m--- /dev/null[m
+[1m+++ b/src/data/appointments.json[m
+[36m@@ -0,0 +1,3 @@[m
+[32m+[m[32m[[m
+[32m+[m[41m  [m
+[32m+[m[32m][m
+\ No newline at end of file[m
+[1mdiff --git a/src/modules/appointments/appointmentService.js b/src/modules/appointments/appointmentService.js[m
+[1mindex ef8e4be..49e90ef 100644[m
+[1m--- a/src/modules/appointments/appointmentService.js[m
+[1m+++ b/src/modules/appointments/appointmentService.js[m
+[36m@@ -1,7 +1,17 @@[m
+[31m-//temporary apointment data for development and testing(without JSON)[m
+[31m-const appointments = [[m
+[31m-    [m
+[31m-][m
+[32m+[m[32m// importing functions from filemanager[m
+[32m+[m[32mconst path = require("path")[m
+[32m+[m[32mconst {readJSON, writeJSON} = require("../../utils/filemanager")[m
+[32m+[m[32m// appointment information recieving path[m
+[32m+[m[32mconst appointmentsFilePath = path.join(__dirname, "../../data/appointments.json")[m
+[32m+[m
+[32m+[m
+[32m+[m
+[32m+[m
+[32m+[m[32m// Load appointments from the JSON file[m
+[32m+[m[32mconst appointments = readJSON(appointmentsFilePath)[m
+[32m+[m
+[32m+[m
+[32m+[m
+ // mock data should be cleaned once JSON data is here[m
+ const patients = [[m
+     {[m
+[36m@@ -153,7 +163,12 @@[m [mfunction bookAppointment(patientId, doctorId, date, time){[m
+         console.log("Patient is inactive. Appointment cannot be found")[m
+         return[m
+     }[m
+[31m-    [m
+[32m+[m[32m    // Check date validation[m
+[32m+[m[32mif (!isValidDate(date)) {[m
+[32m+[m[32m    console.log("Invalid date.");[m
+[32m+[m[32m    return;[m
+[32m+[m[32m}[m
+[32m+[m
+     // is the doctor active and availibel[m
+     const doctor = getDoctorById(doctorId)[m
+     [m
+[36m@@ -238,6 +253,9 @@[m [mfunction bookAppointment(patientId, doctorId, date, time){[m
+             [m
+             appointments.push(newAppointment)[m
+ [m
+[32m+[m[32m            // save appointments to the JSON file[m
+[32m+[m[32m            writeJSON(appointmentsFilePath, appointments);[m
+[32m+[m
+             [m
+             console.log("Apontment Booked Succesfully!")[m
+             [m
+[36m@@ -271,8 +289,9 @@[m [mfunction bookAppointment(patientId, doctorId, date, time){[m
+                 return[m
+                 [m
+             }[m
+[31m-            [m
+             appointment.status = "cancelled"[m
+[32m+[m[32m            // save update to JSON[m
+[32m+[m[32m            writeJSON(appointmentsFilePath, appointments);[m
+             [m
+             console.log("Apointment cancelled successfully!")[m
+         }[m
+[36m@@ -302,8 +321,10 @@[m [mfunction bookAppointment(patientId, doctorId, date, time){[m
+             console.log("This appointment is already completed.");[m
+            return;[m
+           }[m
+[31m-        appointment.status = "completed";[m
+[31m-        console.log("Appointment completed successfully!");[m
+[32m+[m[32m          // update appointments to JSON[m
+[32m+[m[32m          appointment.status = "completed";[m
+[32m+[m[32m          writeJSON(appointmentsFilePath, appointments);[m
+[32m+[m[32m          console.log("Appointment completed successfully!");[m
+ [m
+        } [m
+         [m
+[36m@@ -322,7 +343,7 @@[m [mfunction bookAppointment(patientId, doctorId, date, time){[m
+            return appointments;[m
+             [m
+         }[m
+[31m-        console.log(getAllAppointments())[m
+[32m+[m[41m        [m
+         [m
+         [m
+         // function to get patients appointments by ID[m
+[36m@@ -353,7 +374,7 @@[m [mfunction bookAppointment(patientId, doctorId, date, time){[m
+         [m
+         [m
+ // ==========================[m
+[31m-// get appointments by date[m
+[32m+[m[32m// get appointments by date and status[m
+ // =========================[m
+         [m
+         // Function to get appointments by date[m
+[36m@@ -374,19 +395,24 @@[m [mfunction bookAppointment(patientId, doctorId, date, time){[m
+           [m
+ [m
+ [m
+[32m+[m[32m        //  validate appointmnet by status[m
+          function isValidStatus(status) {[m
+[31m-    const validStatuses = ["booked", "cancelled", "completed"];[m
+[32m+[m[32m             const validStatuses = ["booked", "cancelled", "completed"];[m
+[32m+[m
+[32m+[m[32m             return validStatuses.includes(status);[m
+[32m+[m[32m         }[m
+[32m+[m
+[32m+[m
+ [m
+[31m-    return validStatuses.includes(status);[m
+[31m-}[m
+ [m
+[31m-        //  get appointmnet by status[m
+[32m+[m[32m        // get appointments by status[m
+ [m
+         function getAppointmentsByStatus(status){[m
+             if (!isValidStatus(status)){[m
+                 console.log("Invalid appointmnet status.")[m
+                 return [][m
+             }[m
+[32m+[m
+             const filteredAppointments = appointments.filter(appointment =>{[m
+                 return appointment.status === status[m
+             })[m
+[36m@@ -441,6 +467,12 @@[m [mfunction bookAppointment(patientId, doctorId, date, time){[m
+             console.log("Invalid time format. Use HH:MM")[m
+             return[m
+            }[m
+[32m+[m[32m           // Validate the new date[m
+[32m+[m[32mif (!isValidDate(newDate)) {[m
+[32m+[m[32m    console.log("Invalid date.");[m
+[32m+[m[32m    return;[m
+[32m+[m[32m}[m
+[32m+[m
+ [m
+         // Check whether the doctor works on the new date[m
+        const isWorkingDay = isDoctorWorkingOnDate(appointment.doctorId, newDate);[m
+[36m@@ -501,6 +533,9 @@[m [mfunction bookAppointment(patientId, doctorId, date, time){[m
+         appointment.date = newDate[m
+         appointment.time = newTime[m
+         [m
+[32m+[m[32m        // Save updated appointments to JSON[m
+[32m+[m[32m       writeJSON(appointmentsFilePath, appointments);[m
+[32m+[m
+         console.log("Appointment rescheduale successfully!");[m
+         console.log("New date: ", appointment.date)[m
+         console.log("New Time: ", appointment.time)[m
+[36m@@ -533,8 +568,6 @@[m [mfunction bookAppointment(patientId, doctorId, date, time){[m
+ [m
+ [m
+ [m
+[31m-[m
+[31m-[m
+ [m
+ [m
+ [m
+[1mdiff --git a/src/utils/filemanager.js b/src/utils/filemanager.js[m
+[1mindex b8ca836..7d044b1 100644[m
+[1m--- a/src/utils/filemanager.js[m
+[1m+++ b/src/utils/filemanager.js[m
+[36m@@ -1 +1,46 @@[m
+ //handles reading and writing JSON data files[m
+[32m+[m[32mconst fs = require("fs")[m
+[32m+[m
+[32m+[m[32m// ====================================[m
+[32m+[m[32m// ("path") is a module, through it we can join several files later[m
+[32m+[m[32m// const path = require("path")[m
+[32m+[m[32m// const dataPath = path.join(__dirname, "..", "data", "appointments.json");[m
+[32m+[m[32m// ======================================[m
+[32m+[m
+[32m+[m
+[32m+[m
+[32m+[m[32m// this function reads files, convert JSON text to JSON data and returns it[m
+[32m+[m[32mfunction readJSON(filePath){[m
+[32m+[m[32m    // try and catch is for error inticipation[m
+[32m+[m[32m    try{[m
+[32m+[m[32m    const data = fs.readFileSync(filePath, "utf8")[m
+[32m+[m[32m    const parsedData = JSON.parse(data)[m
+[32m+[m
+[32m+[m[32m    return parsedData[m
+[32m+[m[32m    }catch(error){[m
+[32m+[m[41m       [m
+[32m+[m[32m        throw error[m
+[32m+[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m
+[32m+[m
+[32m+[m[32m// this function writes Javacript data into a JSON file[m
+[32m+[m[32mfunction writeJSON(filePath, data){[m
+[32m+[m
+[32m+[m[32m    // using try and catch for error handling[m
+[32m+[m[32m    try{[m
+[32m+[m[32m       const jsonData = JSON.stringify(data, null, 2)[m
+[32m+[m[32m       fs.writeFileSync(filePath, jsonData, "utf8")[m
+[32m+[m[32m    }catch(error){[m
+[32m+[m[32m        throw error[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m
+[32m+[m
+[32m+[m[32m// export thesee functions so other moxdules can use them[m[41m [m
+[32m+[m[32mmodule.exports = {readJSON, writeJSON}[m
+\ No newline at end of file[m
