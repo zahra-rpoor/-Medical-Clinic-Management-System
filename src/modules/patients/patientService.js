@@ -1,11 +1,19 @@
+filemanager(ESModule)
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { readJSON, writeJson } from "../../utils/filemanager.js";
+const_filename = fileURLToPath(import.meta.url);
+const_dirname = path.dirname(__filename);
 import readline from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
+import Module from "node:module";
 
 const rl = readline.createInterface({
     input,
     output
 });
 
+// Array of patients objects
 const patientData = [
     {
         id: "PAT-0001",
@@ -102,7 +110,7 @@ const patientData = [
 console.log(patientData[0].fullName);
 console.log(patientData.length);
 
-
+// finding patient by id 
 let patientId = "PAT-0001"
 function getPatientById() {
     return patientData.find(patient => patient.id === patientId);
@@ -111,12 +119,13 @@ function getPatientById() {
 console.log(getPatientById(patientId))
 
 
-
+// filtering active patients 
 function getActivePatients() {
     return patientData.filter(patient => patient.status === "active");
 }
 console.log(getActivePatients());
 
+// function for adding new patient to the array 
 const newItem = {
     id: "PAT-0050",
     fullName: "Yalda Ameri",
@@ -133,6 +142,7 @@ function addPatient(newPatient) {
 console.log(addPatient(newItem));
 console.log(patientData);
 
+// Deactivating inactive patients 
 function deactivatePatient(patientId) {
     const findPatient = patientData.find(patient => patient.id === patientId);
     if (!findPatient) {
@@ -146,6 +156,7 @@ function deactivatePatient(patientId) {
 console.log(deactivatePatient("PAT-0004"));
 console.log(deactivatePatient("PAT-9999"));
 
+// Assigning a new phone number for patient 
 let newPhone = { phone: "0789900900" };
 
 function updatePatient(patientId, updateData) {
@@ -160,6 +171,7 @@ function updatePatient(patientId, updateData) {
 
 console.log(updatePatient("PAT-0001", newPhone));
 
+// getting all patients data 
 function getAllPatients() {
     return patientData;
 }
@@ -177,6 +189,7 @@ console.log(getPatientPaginated(2, 5));
 let currentPage = 1;
 const pageLimit = 5;
 
+// paginated pages 
 function showCurrentPage() {
     console.log(`Page ${currentPage}`);
     console.log(getPatientPaginated(currentPage, pageLimit));
@@ -227,6 +240,7 @@ function generateId() {
     return `PAT-${String(nextId).padStart(4, "0")}`;
 }
 
+// validation 
 function validatePatient(patient) {
     if (!patient.fullName || patient.fullName.trim() === "") {
         return "Patient name is required!";
@@ -251,6 +265,7 @@ function validatePatient(patient) {
     return true;
 }
 
+// registering new patient 
 function registerPatient(patient) {
     const validation = validatePatient(patient);
 
