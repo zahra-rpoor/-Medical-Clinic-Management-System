@@ -1,0 +1,16 @@
+[{ "id": "REC-0001",
+"appointmentId": "APT-0001",
+"patientId": "PAT-0001",
+"doctorId": "Doc-0001",
+"date":"2026-11-24",
+"diagnosis": "Seasonal Flu",
+"notes": "Rest and hydration recommended.",
+"prescriptions": [
+    {
+      "medication": "Paracetamol",
+      "dose": "75mg",
+      "durationDays": 5
+    }
+  ]
+}
+  ]
